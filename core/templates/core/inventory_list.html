@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Inventory{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="col-md-8 col-md-offset-2">
+    <ul class="list-inline">
+      <li><a class="btn btn-primary" href="{% url 'core:inventory_add' %}">Add Item</a></li>
+    </ul>
+    <h1>Inventory</h1>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Unit Sales Price</th>
+            <th>Quantity</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for i in inventory %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td><a href="{% url 'core:item' i.pk %}">{{ i.item_name }}</a><br><span class="text-muted">{{ i.item_sku }}</span></td>
+              <td>{{ i.currency }} {{ i.unit_price }}</td>
+              <td>{{ i.quantity }}</td>
+            </tr>
+          {% empty %}
+            <tr class="text-center"><td colspan="4">Nothing Found</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+    {% if is_paginated %}
+      <div class="pagination">
+      <span class="page-links">
+        {% if page_obj.has_previous %}
+          <a href="{% url request.resolver_match.url_name page_obj.previous_page_number %}{% if request.META.QUERY_STRING %}?{{ request.META.QUERY_STRING }}{% endif %}">previous</a>
+        {% endif %}
+        <span class="page-current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+          </span>
+        {% if page_obj.has_next %}
+          <a href="{% url request.resolver_match.url_name page_obj.next_page_number %}{% if request.META.QUERY_STRING %}?{{ request.META.QUERY_STRING }}{% endif %}">next</a>
+        {% endif %}
+      </span>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

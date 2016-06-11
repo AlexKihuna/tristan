@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="container">
+    <h1>Home</h1>
+
+    <p>Welcome to your admin dashboard. Here we will be able to track your sales, your customers, your suppliers and
+      your inventory.</p>
+
+    <div class="col-md-4">
+      <div class="thumbnail">
+        <h3 class="text-center">Tristan.. At a glance</h3>
+        <dl class="dl-horizontal">
+          <dt>Total Customers</dt>
+          <dd>{{ total_customers }}</dd>
+          <dt>Total Suppliers</dt>
+          <dd>{{ total_suppliers }}</dd>
+          <dt>Total Sales Orders</dt>
+          <dd>{{ total_sales_orders }}</dd>
+          <dt>Total Revenue</dt>
+          <dd>{{ revenue }}</dd>
+          <dt>Total Credit</dt>
+          <dd>{{ credit }}</dd>
+          <dt>Total Supply Orders</dt>
+          <dd>{{ total_supply_orders }}</dd>
+          <dt>Total Expenditure</dt>
+          <dd>{{ expenditure }}</dd>
+          <dt>Total Debit</dt>
+          <dd>{{ debit }}</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="thumbnail">
+        <h3 class="text-center">Urgent.. Focus here</h3>
+
+        <p><a href="">{{ del_orders }} orders require delivery</a></p>
+
+        <p><a href="">{{ unpaying_customers }} customers need to pay on {{ total_unpaid_sales }} orders</a></p>
+
+        <p><a href="">{{ unpaid_suppliers }} suppliers need to be paid on {{ total_unpaid_purchases }} orders</a></p>
+
+        <p><a href="">{{ low_items }} items are nearly out of stock</a></p>
+      </div>
+    </div>
+  <div class="col-md-4">
+    <h3 class="text-center">Quick Links</h3>
+    <ul class="list-unstyled text-center">
+      <li><a href="{% url 'core:customer_list' %}">Customers</a></li>
+      <li><a href="{% url 'core:supplier_list' %}">Suppliers</a></li>
+      <li><a href="{% url 'core:salesorder_list' %}">Sales Orders</a></li>
+      <li><a href="{% url 'core:supplyorder_list' %}">Supply Orders</a></li>
+      <li><a href="{% url 'core:inventory' %}">Inventory</a></li>
+    </ul>
+  </div>
+
+  </div>
+{% endblock %}

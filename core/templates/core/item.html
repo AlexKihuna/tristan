@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ item.item_name }}{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="col-md-4">
+      <h1>{{ item.item_name }}</h1>
+
+      <p>{{ item.item_sku }}</p>
+      <dl class="dl-horizontal">
+        <dt>Quantity in Stock</dt>
+        <dd>{{ item.quantity }}</dd>
+        <dt>Unit Price</dt>
+        <dd>{{ item.currency }} {{ item.unit_price }}</dd>
+      </dl>
+
+      <ul class="list-unstyled">
+        <li><a class="btn btn-primary" href="{% url 'core:inventory_edit' item.id %}">Edit</a></li>
+      </ul>
+      <hr>
+    <ul class="list-unstyled">
+        <li><a class="btn btn-primary" href="{% url 'core:item_image_add' item.id %}">Add Image</a></li>
+      </ul>
+      <div class="thumbnails">
+        {% for image in item.itemimage_set.all %}
+          <img src="{{ image.image.url }}" class="img-thumbnail img-responsive">
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-md-8"><p>{{ item.description }}</p></div>
+  </div>
+{% endblock %}

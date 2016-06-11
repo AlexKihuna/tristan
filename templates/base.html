@@ -1,0 +1,97 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="{% static "images/favicon.png" %}">
+  <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}"/>
+  <link rel="stylesheet" href="{% static "css/font-awesome.min.css" %}"/>
+{#  <link rel="stylesheet" href="{% static "css/jquery-ui.min.css" %}"/>#}
+  <link rel="stylesheet" href="{% static "css/animate.css" %}"/>
+  <link rel="stylesheet" href="{% static "css/style.css" %}"/>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+  <title>{% block title %}Tristan{% endblock %}</title>
+</head>
+<body>
+<main>
+  <nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="{% url "core:index" %}">Tristan</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav"></ul>
+        {% url "core:index" as index_link %}
+        {% url "core:customer_list" as customers_link %}
+        {% url "core:supplier_list" as suppliers_link %}
+        {% url "core:salesorder_list" as salesorders_link %}
+        {% url "core:supplyorder_list" as supplyorders_link %}
+        {% url "core:inventory" as inventory_link %}
+        {% with curl=request.path %}
+          <ul class="nav navbar-nav navbar-right">
+            <li class="{% if index_link == curl %}active{% endif %}"><a href="{{ index_link }}">Home</a></li>
+            <li class="{% if customers_link in curl %}active{% endif %}"><a href="{{ customers_link }}">Customers</a></li>
+            <li class="{% if suppliers_link in curl %}active{% endif %}"><a href="{{ suppliers_link }}">Suppliers</a></li>
+            <li class="{% if salesorders_link in curl %}active{% endif %}"><a href="{{ salesorders_link }}">Sales Orders</a></li>
+            <li class="{% if supplyorders_link in curl %}active{% endif %}"><a href="{{ supplyorders_link }}">Supply Orders</a></li>
+            <li class="{% if inventory_link in curl %}active{% endif %}"><a href="{{ inventory_link }}">Inventory</a></li>
+            <li>
+              <form class="navbar-form" role="search" method="GET" action="">
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Search" name="search">
+                  <span class="input-group-btn">
+                    <button type="submit" class="btn btn-success">
+                      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </button>
+                  </span>
+                </div>
+              </form>
+            </li>
+          </ul>
+        {% endwith %}
+      </div>
+      <!--/.nav-collapse -->
+    </div>
+  </nav>
+  {% block content %}{% endblock %}
+</main>
+<footer>
+  <div class="copyright">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <p class="text-center">Copyright &copy; Tristan 2016 | All rights reserved.</p>
+          <ul class="list-inline text-center">
+            <li><a href="https://www.facebook.com/" target="_blank"><i class="fa fa-facebook fa-lg"></i></a></li>
+            <li><a href="https://twitter.com/" target="_blank"><i class="fa fa-twitter fa-lg"></i></a></li>
+            <li><a href="http://instagram.com/" target="_blank"><i class="fa fa-instagram fa-lg"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="{% static "js/jquery-1.11.3.min.js" %}"></script>
+<script src="{% static "js/jquery-ui.min.js" %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/holder.min.js' %}"></script>
+<script src="{% static 'js/wow.min.js' %}"></script>
+<script>
+  new WOW().init();
+$(document).ready(function() {
+    $('.datepicker').datepicker();
+});
+</script>
+</body>
+</html>

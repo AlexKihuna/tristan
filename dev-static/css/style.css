@@ -1,0 +1,24 @@
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 110px;
+}
+
+main {
+    /*height: 100%;*/
+    /*padding-bottom: 100px;*/
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    border-top: 2px solid #333;
+    padding: 10px 0;
+    margin-top: -100px;
+    height: 100px;
+    background-color: #efefef;
+    width: 100%;
+}

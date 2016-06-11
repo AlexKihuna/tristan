@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="container">
+    <div class="col-md-3">
+      {#  Put customer details here  #}
+      <h1>{{ customer.name }}</h1>
+      <ul class="list-unstyled">
+        <li>{{ customer.email }}</li>
+        <li>{{ customer.contact_phone }}</li>
+      </ul>
+      <ul class="list-inline">
+        <li><a class="btn btn-primary" href="{% url 'core:customer_edit' customer.pk %}">Edit</a></li>
+      </ul>
+      <hr>
+      {# Get some customer stats like total no. of or #}
+      <h3>Stats</h3>
+      <dl class="dl-horizontal">
+        <dt>Total Orders</dt>
+        <dd>{{ customer.total_orders }}</dd>
+        <dt>Total Paid</dt>
+        <dd>{{ customer.currency }} {{ customer.total_paid }}</dd>
+      </dl>
+    </div>
+    <div class="col-md-9">
+      {#  Put pending orders here  #}
+      <div>
+        <h2>Orders</h2>
+        <table class="table table-hover"></table>
+        <p class="text-center"><a class="btn btn-info">All Orders</a></p>
+      </div>
+      {#  Put pending payments here  #}
+      <div>
+        <h2>Payments</h2>
+        <table class="table table-hover"></table>
+        <p class="text-center"><a class="btn btn-info">All Payments</a></p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

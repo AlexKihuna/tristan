@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Sales Order {{ salesorder.order_code }}{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="col-md-4">
+      <h1>Sales Order {{ salesorder.order_code }}</h1>
+      <p>For {{ salesorder.customer.name }}</p>
+      <p>Made on: {{ salesorder.order_date }}</p>
+      <div class="col-md-8 col-md-offset-1">
+        <p><a class="btn btn-primary btn-block" href="{% url 'core:salesorder_edit' salesorder.pk %}">Edit</a></p>
+        <p><a class="btn btn-primary btn-block" href="{% url 'core:salesorderitem_add' salesorder.pk %}">Add Item</a></p>
+        <p><a class="btn btn-primary btn-block" href="{% url 'core:salesorderpayment_add' salesorder.pk %}">Add Payment</a></p>
+      </div>
+      <div class="clearfix"></div>
+      <hr>
+      <p>Order Value: {{ salesorder.order_currency }} {{ salesorder.order_value }}</p>
+    </div>
+    <div class="col-md-8">
+      <h3>Items Ordered</h3>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Item Name</th>
+          <th>Quantity Ordered</th>
+          <th>Quantity Delivered</th>
+          <th>Unit Price</th>
+          <th>Total Price</th>
+          <th>Delivered</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for i in salesorder.salesorderitem_set.all %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ i.item.item_name }}</td>
+            <td>{{ i.quantity_ordered }}</td>
+            <td>{{ i.quantity_delivered }}</td>
+            <td>{{ i.currency }} {{ i.unit_price }}</td>
+            <td>{{ i.currency }} {{ i.total_cost }}</td>
+            <td>{{ i.is_delivered }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <hr>
+      <h3>Payments Made</h3>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>#</th>
+          <th>Amount Paid</th>
+          <th>Date Paid</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for p in salesorder.salesorderpayment_set.all %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ p.currency }} {{ p.amount_paid }}</td>
+            <td>{{ p.date_paid }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
