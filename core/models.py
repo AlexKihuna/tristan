@@ -32,7 +32,7 @@ ORDER_STATUS = (
 class Customer(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField(blank=True, null=True)
-    contact_phone = models.EmailField(blank=True, null=True)
+    contact_phone = models.CharField(max_length=30, blank=True, null=True)
     currency = models.CharField(max_length=3, choices=CURRENCY, default='KES')
     total_paid = models.DecimalField(
         max_digits=9, decimal_places=2, default=0, editable=False
@@ -52,7 +52,7 @@ class Customer(models.Model):
 class Supplier(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField(blank=True, null=True)
-    contact_phone = models.EmailField(blank=True, null=True)
+    contact_phone = models.CharField(max_length=30, blank=True, null=True)
     currency = models.CharField(max_length=3, choices=CURRENCY, default='KES')
     total_paid = models.DecimalField(
         max_digits=9, decimal_places=2, default=0, editable=False
