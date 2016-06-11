@@ -15,3 +15,5 @@ Thumbs.db
 # Project files
 *.sqlite
 config.py
+media
+static
