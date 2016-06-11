@@ -9,7 +9,7 @@ PRESERVE_LIST = ['0002.py']
 
 for root, dirs, files in os.walk(BASE_DIR):
     # print root, BASE_DIR
-    if os.path.split(root)[1] == 'Julia' and root != BASE_DIR:
+    if os.path.split(root)[1] in DIR_LIST and root != BASE_DIR:
         continue
     if os.path.split(root)[1] == 'migrations':
         for f in files:
@@ -24,3 +24,4 @@ for root, dirs, files in os.walk(BASE_DIR):
             f_path = os.path.join(root, f)
             print 'Deleted:', f_path
             os.remove(f_path)
+raw_input('Press Enter to continue...')
