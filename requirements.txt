@@ -1,3 +1,6 @@
 django
 Pillow
 psycopg2
+django-registration-redux
+django-bootstrap3
+pytz
