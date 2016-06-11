@@ -163,8 +163,6 @@ class SalesOrderDetailView(DetailView):
 
 class SalesOrderCreateView(AjaxableResponseMixin, CreateView):
     form_class = SalesOrderForm
-    # model = SalesOrder
-    # fields = ['customer', 'order_date']
     template_name = 'core/form.html'
 
     def get_context_data(self, **kwargs):
@@ -174,9 +172,8 @@ class SalesOrderCreateView(AjaxableResponseMixin, CreateView):
 
 
 class SalesOrderUpdateView(AjaxableResponseMixin, UpdateView):
-    form_class =  SalesOrderForm
+    form_class = SalesOrderForm
     model = SalesOrder
-    # fields = ['customer', 'order_date']
     template_name = 'core/form.html'
 
     def get_context_data(self, **kwargs):
@@ -265,15 +262,8 @@ class InventoryUpdateView(AjaxableResponseMixin, UpdateView):
 
 class ImageCreateView(AjaxableResponseMixin, CreateView):
     model = ItemImage
-    # fields = ['item', 'image']
     fields = ['image']
     template_name = 'core/form.html'
-
-    # def get_initial(self):
-    #     """Returns the initial data to use for forms on this view."""
-    #     initial = super(ImageCreateView, self).get_initial()
-    #     initial['item'] = self.kwargs['pk']
-    #     return initial
 
     def get_context_data(self, **kwargs):
         context = super(ImageCreateView, self).get_context_data(**kwargs)

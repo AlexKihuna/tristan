@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'core.apps.CoreConfig',
+    'registration',
+    'bootstrap3',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -76,10 +79,6 @@ WSGI_APPLICATION = 'Tristan.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'tristan',
@@ -139,4 +138,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Custom Settings
-PAGE_SIZE = 24 # Number of items a page should list
+PAGE_SIZE = 24  # Number of items a page should list
+SITE_ID = 1
