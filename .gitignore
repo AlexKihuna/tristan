@@ -14,7 +14,9 @@ Thumbs.db
 
 # Project files
 *.sqlite
+*.sqlite3
 config.py
 media
 static
 *.py[co]
+*.log

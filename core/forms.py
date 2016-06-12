@@ -2,7 +2,7 @@ from django import forms
 from .models import (
     Customer, Supplier, SalesOrder, SupplyOrder, SalesOrderPayment,
     SupplyOrderPayment, SalesOrderItem, SupplyOrderItem, Inventory,
-    ItemImage
+    ItemImage, SalesOrderItemDelivery
 )
 
 
@@ -15,6 +15,15 @@ class SalesOrderForm(forms.ModelForm):
         }
 
 
+class ItemDeliveryForm(forms.ModelForm):
+    class Meta:
+        model = SalesOrderItemDelivery
+        fields = ['quantity_delivered', 'delivery_date']
+        widgets = {
+            'delivery_date': forms.DateInput(attrs={'class':'datepicker'}),
+        }
+
+
 class SalesOrderPaymentForm(forms.ModelForm):
     class Meta:
         model = SalesOrderPayment
@@ -22,3 +31,5 @@ class SalesOrderPaymentForm(forms.ModelForm):
         widgets = {
             'date_paid': forms.DateInput(attrs={'class':'datepicker'}),
         }
+
+payment_formset = forms.formset_factory(SalesOrderPayment)

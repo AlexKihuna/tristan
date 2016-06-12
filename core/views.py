@@ -1,14 +1,15 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.conf import settings
 from django.shortcuts import render, render_to_response
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.template import RequestContext
 from django.db.models import Avg, Sum, Max, Min, Count, F, Q
 from .models import (
     Customer, Supplier, SalesOrder, SupplyOrder, SalesOrderPayment,
     SupplyOrderPayment, SalesOrderItem, SupplyOrderItem, Inventory,
-    ItemImage
+    ItemImage, SalesOrderItemDelivery
 )
-from .forms import SalesOrderPaymentForm, SalesOrderForm
+from .forms import SalesOrderPaymentForm, SalesOrderForm, ItemDeliveryForm
 from .mixin import AjaxableResponseMixin
 
 
@@ -182,6 +183,17 @@ class SalesOrderUpdateView(AjaxableResponseMixin, UpdateView):
         return context
 
 
+class SalesOrderDeleteView(AjaxableResponseMixin, DeleteView):
+    model = SalesOrder
+    template_name = 'core/confirm_delete.html'
+    success_url = reverse_lazy('core:salesorder_list')
+
+    def get_context_data(self, **kwargs):
+        context = super(SalesOrderDeleteView, self).get_context_data(**kwargs)
+        context['page_title'] = "Sales Order %s" % context['object'].order_code
+        return context
+
+
 class SalesOrderItemCreateView(AjaxableResponseMixin, CreateView):
     model = SalesOrderItem
     fields = ['item', 'quantity_ordered', 'currency', 'unit_price']
@@ -197,6 +209,41 @@ class SalesOrderItemCreateView(AjaxableResponseMixin, CreateView):
         sales_order = SalesOrder.objects.get(pk=self.kwargs['pk'])
         form.instance.sales_order = sales_order
         return super(SalesOrderItemCreateView, self).form_valid(form)
+
+
+class SalesOrderItemUpdateView(AjaxableResponseMixin, UpdateView):
+    model = SalesOrderItem
+    fields = ['item', 'quantity_ordered', 'currency', 'unit_price']
+    template_name = 'core/form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SalesOrderItemUpdateView, self).get_context_data(**kwargs)
+        sales_order = SalesOrder.objects.get(pk=self.kwargs['pk'])
+        context['page_title'] = "Sales Order %s: Edit Item" % sales_order.order_code
+        return context
+
+    def form_valid(self, form):
+        sales_order = SalesOrder.objects.get(pk=self.kwargs['pk'])
+        form.instance.sales_order = sales_order
+        return super(SalesOrderItemUpdateView, self).form_valid(form)
+
+
+class SalesOrderDeliveryCreateView(AjaxableResponseMixin, CreateView):
+    form_class = ItemDeliveryForm
+    template_name = 'core/form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SalesOrderDeliveryCreateView, self).get_context_data(**kwargs)
+        item = SalesOrderItem.objects.get(pk=self.kwargs['pk'])
+        context['page_title'] = "Sales Order %s: Add %s Delivery" % (
+            item.sales_order.order_code, item.item.item_name
+        )
+        return context
+
+    def form_valid(self, form):
+        item = SalesOrderItem.objects.get(pk=self.kwargs['pk'])
+        form.instance.item = item
+        return super(SalesOrderDeliveryCreateView, self).form_valid(form)
 
 
 class SalesOrderPaymentCreateView(AjaxableResponseMixin, CreateView):

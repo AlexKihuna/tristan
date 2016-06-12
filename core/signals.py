@@ -2,7 +2,8 @@ from django.db.models.signals import pre_save, post_save
 from django.db.models import F, Q
 from django.dispatch import receiver
 from .models import (
-    SalesOrder, SupplyOrder, SalesOrderPayment, SupplyOrderPayment
+    SalesOrder, SupplyOrder, SalesOrderPayment, SupplyOrderPayment,
+    SalesOrderItem, SalesOrderItemDelivery
 )
 
 
@@ -62,3 +63,19 @@ def pre_save_supply_order_payment(sender, instance, **kwargs):
     supplier = instance.supply_order.supplier
     supplier.total_paid += instance.amount_paid
     supplier.save()
+
+
+@receiver(pre_save, sender=SalesOrderItem)
+def pre_save_sales_order_item(sender, instance, **kwargs):
+    """Ensure item is marked delivered before saving."""
+    if instance.quantity_delivered == instance.quantity_ordered:
+        instance.is_delivered = True
+
+
+@receiver(post_save, sender=SalesOrderItemDelivery)
+def post_save_sales_item_delivery(sender, created, instance, **kwargs):
+    """Ensure item is marked delivered after saving a delivery."""
+    item = instance.item
+    if item.quantity_delivered == item.quantity_ordered:
+        item.is_delivered = True
+        item.save()

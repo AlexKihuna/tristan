@@ -146,8 +146,8 @@ class SalesOrder(models.Model):
     @property
     def amount_due(self):
         """Takes delivery into consideration and bills only delivered items"""
-        queryset = self.salesorderitem_set.filter(delivery_date__isnull=False).aggregate(
-            amount_due=Sum(F('unit_price')*F('quantity_ordered'))
+        queryset = self.salesorderitem_set.filter(is_delivered=False).aggregate(
+            amount_due=Sum(E(F('unit_price')*F('quantity_ordered'), output_field=models.DecimalField()))
         )
         return queryset['amount_due'] or 0
 
@@ -192,6 +192,7 @@ class SalesOrderItem(models.Model):
     quantity_ordered = models.IntegerField()
     currency = models.CharField(max_length=3, choices=CURRENCY, default='KES')
     unit_price = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+    is_delivered = models.BooleanField(default=False, editable=False)
 
     def __str__(self):
         return self.item.item_name
@@ -207,10 +208,6 @@ class SalesOrderItem(models.Model):
     def quantity_delivered(self):
         queryset = self.salesorderitemdelivery_set.aggregate(Sum('quantity_delivered'))
         return queryset['quantity_delivered__sum'] or 0
-
-    @property
-    def is_delivered(self):
-        return self.quantity_delivered == self.quantity_ordered
 
     @property
     def last_delivery_date(self):
