@@ -4,6 +4,7 @@ from django.db.models import Avg, Sum, Max, Min, Count, F, Q, ExpressionWrapper 
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.utils.timezone import now
 from django.db import models
+from uuid import uuid4
 
 # All currency is in Kenya Shillings. TODO Support multi currency
 
@@ -17,14 +18,14 @@ ITEM_STATUS = (
 )
 
 PAYMENT_STATUS = (
-    ('pending_payment', 'Pending Payment'),
+    ('pending payment', 'Pending Payment'),
     ('overdue', 'Overdue'),
     ('critical', 'Critical'),
     ('paid', 'Paid'),
 )
 
 ORDER_STATUS = (
-    ('pending_deliveries', 'Pending Deliveries'),
+    ('pending deliveries', 'Pending Deliveries'),
     ('complete', 'Complete'),
 )
 
@@ -157,7 +158,7 @@ class SalesOrder(models.Model):
 
     @property
     def last_delivery_date(self):
-        max_dates = [item.last_delivery_date for item in self.salesorderitem_set
+        max_dates = [item.last_delivery_date for item in self.salesorderitem_set.all()
                      if item.last_delivery_date]
         if max_dates:
             return max(max_dates).date()
@@ -165,25 +166,25 @@ class SalesOrder(models.Model):
 
     @property
     def is_delivery_complete(self):
-        return all([item.is_delivered for item in self.salesorderitem_set])
+        return all([item.is_delivered for item in self.salesorderitem_set.all()])
 
     def get_payment_status(self):
         if self.is_paid:
             return 'paid'
         if not self.last_delivery_date:
-            return 'pending_payment'
+            return 'pending payment'
         td = now() - self.last_delivery_date
         if td.days <= 30:
-            return 'pending_payment'
+            return 'pending payment'
         if 30 < td.days <= 60:
             return 'overdue'
         if 60 < td.days:
             return 'critical'
 
     def get_order_status(self):
-        if self.delivery_complete:
+        if self.is_delivery_complete:
             return 'complete'
-        return 'pending'
+        return 'pending deliveries'
 
 
 class SalesOrderItem(models.Model):
@@ -193,6 +194,9 @@ class SalesOrderItem(models.Model):
     currency = models.CharField(max_length=3, choices=CURRENCY, default='KES')
     unit_price = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     is_delivered = models.BooleanField(default=False, editable=False)
+
+    class Meta:
+        unique_together = (("sales_order", "item"),)
 
     def __str__(self):
         return self.item.item_name
@@ -234,6 +238,7 @@ class SalesOrderItemDelivery(models.Model):
 
 class SalesOrderPayment(models.Model):
     sales_order = models.ForeignKey('SalesOrder')
+    payment_code = models.CharField(max_length=30, unique=True, editable=False)
     currency = models.CharField(max_length=3, choices=CURRENCY, default='KES')
     amount_paid = models.DecimalField(max_digits=9, decimal_places=2)
     notes = models.TextField(blank=True, null=True)
@@ -244,6 +249,9 @@ class SalesOrderPayment(models.Model):
 
     def get_absolute_url(self):
         return reverse('core:salesorder', kwargs={'pk': self.sales_order.pk})
+
+    def get_payment_code(self):
+        return str(self.sales_order.order_code) + str(uuid4()).split('-')[0]
 
 
 class SupplyOrder(models.Model):
@@ -292,7 +300,7 @@ class SupplyOrder(models.Model):
 
     @property
     def last_delivery_date(self):
-        max_dates = [item.last_delivery_date for item in self.supplyorderitem_set
+        max_dates = [item.last_delivery_date for item in self.supplyorderitem_set.all()
                      if item.last_delivery_date]
         if max_dates:
             return max(max_dates).date()
@@ -300,7 +308,7 @@ class SupplyOrder(models.Model):
 
     @property
     def is_delivery_complete(self):
-        return all([item.is_delivered for item in self.supplyorderitem_set])
+        return all([item.is_delivered for item in self.supplyorderitem_set.all()])
 
     def get_payment_status(self):
         if self.is_paid:

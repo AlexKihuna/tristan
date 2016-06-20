@@ -190,7 +190,7 @@ class SalesOrderDeleteView(AjaxableResponseMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(SalesOrderDeleteView, self).get_context_data(**kwargs)
-        context['page_title'] = "Sales Order %s" % context['object'].order_code
+        context['page_title'] = "Delete Sales Order %s" % context['object'].order_code
         return context
 
 
@@ -218,14 +218,28 @@ class SalesOrderItemUpdateView(AjaxableResponseMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(SalesOrderItemUpdateView, self).get_context_data(**kwargs)
-        sales_order = SalesOrder.objects.get(pk=self.kwargs['pk'])
-        context['page_title'] = "Sales Order %s: Edit Item" % sales_order.order_code
+        context['page_title'] = "Sales Order %s: Edit Item" % context['object'].sales_order.order_code
         return context
 
     def form_valid(self, form):
-        sales_order = SalesOrder.objects.get(pk=self.kwargs['pk'])
-        form.instance.sales_order = sales_order
+        context = self.get_context_data()
+        form.instance.sales_order = context['object'].sales_order
         return super(SalesOrderItemUpdateView, self).form_valid(form)
+
+
+class SalesOrderItemDeleteView(AjaxableResponseMixin, DeleteView):
+    model = SalesOrderItem
+    template_name = 'core/confirm_delete.html'
+    # success_url = reverse_lazy('core:salesorder')
+
+    def get_success_url(self):
+        context = self.get_context_data()
+        return reverse_lazy('core:salesorder', kwargs={'pk': context['object'].pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(SalesOrderItemDeleteView, self).get_context_data(**kwargs)
+        context['page_title'] = "Delete Sales Order Item %s" % context['object'].item.item_name
+        return context
 
 
 class SalesOrderDeliveryCreateView(AjaxableResponseMixin, CreateView):
@@ -260,6 +274,38 @@ class SalesOrderPaymentCreateView(AjaxableResponseMixin, CreateView):
         sales_order = SalesOrder.objects.get(pk=self.kwargs['pk'])
         form.instance.sales_order = sales_order
         return super(SalesOrderPaymentCreateView, self).form_valid(form)
+
+
+class SalesOrderPaymentUpdateView(AjaxableResponseMixin, UpdateView):
+    model = SalesOrderPayment
+    form_class = SalesOrderPaymentForm
+    template_name = 'core/form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SalesOrderPaymentUpdateView, self).get_context_data(**kwargs)
+        sales_order = SalesOrder.objects.get(pk=self.kwargs['pk'])
+        context['page_title'] = "Sales Order %s: Edit Item" % sales_order.order_code
+        return context
+
+    def form_valid(self, form):
+        sales_order = SalesOrder.objects.get(pk=self.kwargs['pk'])
+        form.instance.sales_order = sales_order
+        return super(SalesOrderPaymentUpdateView, self).form_valid(form)
+
+
+class SalesOrderPaymentDeleteView(AjaxableResponseMixin, DeleteView):
+    model = SalesOrderPayment
+    template_name = 'core/confirm_delete.html'
+    # success_url = reverse_lazy('core:salesorder')
+
+    def get_success_url(self):
+        context = self.get_context_data()
+        return reverse_lazy('core:salesorder', kwargs={'pk': context['object'].pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(SalesOrderPaymentDeleteView, self).get_context_data(**kwargs)
+        context['page_title'] = "Delete Sales Order Item %s" % context['object'].item.item_name
+        return context
 
 
 class InventoryListView(ListView):

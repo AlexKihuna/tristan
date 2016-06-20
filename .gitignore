@@ -18,5 +18,6 @@ Thumbs.db
 config.py
 media
 static
+migrations
 *.py[co]
 *.log

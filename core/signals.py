@@ -24,13 +24,6 @@ def post_save_supply_order(sender, created, instance, **kwargs):
 
 
 @receiver(pre_save, sender=SalesOrder)
-def pre_save_sales_order(sender, instance, **kwargs):
-    """Ensure correct payment status for all orders before saving"""
-    # Add the payment status before saving
-    instance.payment_status = instance.get_payment_status()
-    instance.order_status = instance.get_order_status()
-
-
 @receiver(pre_save, sender=SupplyOrder)
 def pre_save_sales_order(sender, instance, **kwargs):
     """Ensure correct payment status for all orders before saving"""
@@ -50,6 +43,8 @@ def pre_save_sales_order_payment(sender, instance, **kwargs):
     customer = instance.sales_order.customer
     customer.total_paid += instance.amount_paid
     customer.save()
+    if not instance.payment_code:
+        instance.payment_code = instance.get_payment_code()
 
 
 @receiver(pre_save, sender=SupplyOrderPayment)
@@ -72,10 +67,14 @@ def pre_save_sales_order_item(sender, instance, **kwargs):
         instance.is_delivered = True
 
 
+@receiver(post_save, sender=SalesOrderItem)
+def post_save_sales_item(sender, created, instance, **kwargs):
+    # Update the order status
+    instance.sales_order.save()
+
+
 @receiver(post_save, sender=SalesOrderItemDelivery)
 def post_save_sales_item_delivery(sender, created, instance, **kwargs):
     """Ensure item is marked delivered after saving a delivery."""
-    item = instance.item
-    if item.quantity_delivered == item.quantity_ordered:
-        item.is_delivered = True
-        item.save()
+    instance.item.save()
+
