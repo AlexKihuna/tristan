@@ -38,6 +38,9 @@ class Customer(models.Model):
     total_paid = models.DecimalField(
         max_digits=9, decimal_places=2, default=0, editable=False
     )
+    total_due = models.DecimalField(
+        max_digits=9, decimal_places=2, default=0, editable=False
+    )
 
     def __str__(self):
         return self.name
@@ -56,6 +59,9 @@ class Supplier(models.Model):
     contact_phone = models.CharField(max_length=30, blank=True, null=True)
     currency = models.CharField(max_length=3, choices=CURRENCY, default='KES')
     total_paid = models.DecimalField(
+        max_digits=9, decimal_places=2, default=0, editable=False
+    )
+    total_due = models.DecimalField(
         max_digits=9, decimal_places=2, default=0, editable=False
     )
 
@@ -146,22 +152,18 @@ class SalesOrder(models.Model):
 
     @property
     def amount_due(self):
-        """Takes delivery into consideration and bills only delivered items"""
-        queryset = self.salesorderitem_set.filter(is_delivered=False).aggregate(
-            amount_due=Sum(E(F('unit_price')*F('quantity_ordered'), output_field=models.DecimalField()))
-        )
-        return queryset['amount_due'] or 0
+        return self.order_value - self.total_paid
 
     @property
     def is_paid(self):
-        return self.total_paid >= self.amount_due
+        return self.total_paid == self.order_value
 
     @property
     def last_delivery_date(self):
         max_dates = [item.last_delivery_date for item in self.salesorderitem_set.all()
                      if item.last_delivery_date]
         if max_dates:
-            return max(max_dates).date()
+            return max(max_dates)
         return None
 
     @property
@@ -215,8 +217,11 @@ class SalesOrderItem(models.Model):
 
     @property
     def last_delivery_date(self):
-        queryset = self.salesorderitemdelivery_set.aggregate(Max('delivery_date'))
-        return queryset['delivery_date__max'] or None
+        try:
+            last_delivery = self.salesorderitemdelivery_set.latest('delivery_date')
+            return last_delivery.delivery_date or None
+        except SalesOrderItemDelivery.DoesNotExist:
+            return None
 
 
 class SalesOrderItemDelivery(models.Model):

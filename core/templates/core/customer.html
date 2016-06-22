@@ -1,31 +1,59 @@
 {% extends "base.html" %}
+{% block title %}{{ customer.name }}{% endblock %}
 {% block content %}
-  <div class="container">
-    <div class="col-md-3">
+  <div class="container-fluid">
+    <div class="col-md-4">
       {#  Put customer details here  #}
       <h1>{{ customer.name }}</h1>
       <ul class="list-unstyled">
         <li>{{ customer.email }}</li>
         <li>{{ customer.contact_phone }}</li>
       </ul>
-      <ul class="list-inline">
-        <li><a class="btn btn-primary" href="{% url 'core:customer_edit' customer.pk %}">Edit</a></li>
-      </ul>
+      <div class="col-md-8 col-md-offset-1">
+        <p><a class="btn btn-default btn-block" href="{% url 'core:customer_edit' customer.pk %}">Edit</a></p>
+        <p><a class="btn btn-primary btn-block" href="{% url 'core:salesorder_add' %}">Add Order</a></p>
+        <p><a class="btn btn-danger btn-block" href="{% url 'core:customer_delete' customer.pk %}">Delete</a></p>
+      </div>
+      <div class="clearfix"></div>
       <hr>
       {# Get some customer stats like total no. of or #}
       <h3>Stats</h3>
-      <dl class="dl-horizontal">
-        <dt>Total Orders</dt>
-        <dd>{{ customer.total_orders }}</dd>
-        <dt>Total Paid</dt>
-        <dd>{{ customer.currency }} {{ customer.total_paid }}</dd>
-      </dl>
+      <ul class="list-unstyled">
+        <li><strong>Total Orders</strong>: {{ customer.total_orders }}</li>
+        <li><strong>Total Paid</strong>: {{ customer.currency }} {{ customer.total_paid }}</li>
+        <li><strong>Total Due</strong>: {{ customer.currency }} {{ customer.total_due }}</li>
+      </ul>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-8">
       {#  Put pending orders here  #}
       <div>
         <h2>Orders</h2>
-        <table class="table table-hover"></table>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Order Code</th>
+              <th>Value</th>
+              <th>Delivery Status</th>
+              <th>Payment Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in customer.salesorder_set.all %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><a href="{% url 'core:salesorder' s.pk %}">{{ s.order_code }}</a></td>
+                <td>{{ s.order_currency }} {{ s.order_value }}</td>
+                <td>{{ s.order_status }}</td>
+                <td>{{ s.payment_status }}</td>
+              </tr>
+            {% empty %}
+              <tr class="text-center"><td colspan="5">Nothing Found</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
         <p class="text-center"><a class="btn btn-info">All Orders</a></p>
       </div>
       {#  Put pending payments here  #}

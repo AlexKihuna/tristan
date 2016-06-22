@@ -1,25 +1,30 @@
 {% extends "base.html" %}
 {% block title %}{{ supplier.name }}{% endblock %}
 {% block content %}
-  <div class="container">
-    <div class="col-md-3">
-      {#  Put customer details here  #}
+  <div class="container-fluid">
+  <div class="col-md-4">
+      {#  Put supplier details here  #}
       <h1>{{ supplier.name }}</h1>
       <ul class="list-unstyled">
         <li>{{ supplier.email }}</li>
         <li>{{ supplier.contact_phone }}</li>
       </ul>
+      <div class="col-md-8 col-md-offset-1">
+        <p><a class="btn btn-default btn-block" href="{% url 'core:supplier_edit' supplier.pk %}">Edit</a></p>
+        <p><a class="btn btn-primary btn-block disabled" href="{% url 'core:salesorder_add' %}">Add Order</a></p>
+        <p><a class="btn btn-danger btn-block" href="{% url 'core:supplier_delete' supplier.pk %}">Delete</a></p>
+      </div>
+      <div class="clearfix"></div>
       <hr>
-      {# Get some customer stats like total no. of or #}
+      {# Get some supplier stats like total no. of or #}
       <h3>Stats</h3>
-      <dl class="dl-horizontal">
-        <dt>Total Orders</dt>
-        <dd>{{ supplier.total_orders }}</dd>
-        <dt>Total Paid</dt>
-        <dd>{{ supplier.total_orders }}</dd>
-      </dl>
+      <ul class="list-unstyled">
+        <li><strong>Total Orders</strong>: {{ supplier.total_orders }}</li>
+        <li><strong>Total Paid</strong>: {{ supplier.currency }} {{ supplier.total_paid }}</li>
+        <li><strong>Total Due</strong>: {{ supplier.currency }} {{ supplier.total_due }}</li>
+      </ul>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-8">
       {#  Put pending orders here  #}
       <div>
         <h2>Orders</h2>

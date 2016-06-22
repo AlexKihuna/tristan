@@ -19,7 +19,7 @@ def index(request):
     total_sales_orders = SalesOrder.objects.count()
     total_supply_orders = SupplyOrder.objects.count()
     revenue = SalesOrderPayment.objects.aggregate(Sum('amount_paid'))['amount_paid__sum'] or 0
-    credit = 0
+    credit = Customer.objects.aggregate(Sum('total_due'))['total_due__sum'] or 0
     expenditure = SupplyOrderPayment.objects.aggregate(Sum('amount_paid'))['amount_paid__sum'] or 0
     debit = 0
     del_orders = SalesOrder.objects.filter(order_status='pending_deliveries').count()
@@ -90,6 +90,17 @@ class CustomerUpdateView(AjaxableResponseMixin, UpdateView):
         return context
 
 
+class CustomerDeleteView(AjaxableResponseMixin, DeleteView):
+    model = Customer
+    template_name = 'core/confirm_delete.html'
+    success_url = reverse_lazy('core:customer_list')
+
+    def get_context_data(self, **kwargs):
+        context = super(CustomerDeleteView, self).get_context_data(**kwargs)
+        context['page_title'] = "%s" % context['object'].name
+        return context
+
+
 class SupplierListView(ListView):
     model = Supplier
     template_name = 'core/supplier_list.html'
@@ -134,6 +145,17 @@ class SupplierUpdateView(AjaxableResponseMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(SupplierUpdateView, self).get_context_data(**kwargs)
         context['page_title'] = "Edit %s" % context['object'].name
+        return context
+
+
+class SupplierDeleteView(AjaxableResponseMixin, DeleteView):
+    model = Supplier
+    template_name = 'core/confirm_delete.html'
+    success_url = reverse_lazy('core:supplier_list')
+
+    def get_context_data(self, **kwargs):
+        context = super(SupplierDeleteView, self).get_context_data(**kwargs)
+        context['page_title'] = "%s" % context['object'].name
         return context
 
 
@@ -190,7 +212,7 @@ class SalesOrderDeleteView(AjaxableResponseMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(SalesOrderDeleteView, self).get_context_data(**kwargs)
-        context['page_title'] = "Delete Sales Order %s" % context['object'].order_code
+        context['page_title'] = "Sales Order %s" % context['object'].order_code
         return context
 
 
@@ -238,7 +260,7 @@ class SalesOrderItemDeleteView(AjaxableResponseMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(SalesOrderItemDeleteView, self).get_context_data(**kwargs)
-        context['page_title'] = "Delete Sales Order Item %s" % context['object'].item.item_name
+        context['page_title'] = "Sales Order Item %s" % context['object'].item.item_name
         return context
 
 
@@ -304,7 +326,7 @@ class SalesOrderPaymentDeleteView(AjaxableResponseMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(SalesOrderPaymentDeleteView, self).get_context_data(**kwargs)
-        context['page_title'] = "Delete Sales Order Item %s" % context['object'].item.item_name
+        context['page_title'] = "Sales Order Item %s" % context['object'].item.item_name
         return context
 
 

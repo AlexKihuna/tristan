@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Sales Order {{ salesorder.order_code }}{% endblock %}
 {% block content %}
-  <div class="container">
+  <div class="container-fluid">
     <div class="col-md-4">
       <h1>Sales Order {{ salesorder.order_code }}</h1>
-      <p>For {{ salesorder.customer.name }}</p>
+      <p>For <a href="{% url 'core:customer' salesorder.customer.pk %}">{{ salesorder.customer.name }}</a></p>
       <p>Made on: {{ salesorder.order_date }}</p>
       <div class="col-md-8 col-md-offset-1">
         <p><a class="btn btn-default btn-block" href="{% url 'core:salesorder_edit' salesorder.pk %}">Edit</a></p>
@@ -19,7 +19,7 @@
         <li>Amount Paid: {{ salesorder.order_currency }} {{ salesorder.total_paid }}</li>
         <li>Amount Due: {{ salesorder.order_currency }} {{ salesorder.amount_due }}</li>
         <li>Payment Status: {{ salesorder.payment_status }}</li>
-        <li>Order Status: {{ salesorder.order_status }}</li>
+        <li>Delivery Status: {{ salesorder.order_status }}</li>
       </ul>
     </div>
     <div class="col-md-8">
