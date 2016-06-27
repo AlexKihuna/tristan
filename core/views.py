@@ -276,11 +276,20 @@ class SalesOrderItemUpdateView(AjaxableResponseMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(SalesOrderItemUpdateView, self).get_context_data(**kwargs)
         context['page_title'] = "Sales Order %s: Edit Item" % context['object'].sales_order.order_code
+        if self.request.POST:
+            context['formsets'] = [DeliveryFormset(self.request.POST, instance=self.get_object())]
+        else:
+            context['formsets'] = [DeliveryFormset(instance=self.get_object())]
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         form.instance.sales_order = context['object'].sales_order
+        if all([f.is_valid() for f in context['formsets']]):
+            self.object = form.save()
+            for formset in context['formsets']:
+                formset.instance = self.object
+                formset.save()
         return super(SalesOrderItemUpdateView, self).form_valid(form)
 
 

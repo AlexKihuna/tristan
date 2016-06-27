@@ -10,10 +10,14 @@
           {% csrf_token %}
           {% bootstrap_form form %}
           {% for formset in formsets %}
-            <div class="{{ formset.prefix }} inline">
-{#            <h4>{{ formset.prefix | title }}</h4>#}
-            {% bootstrap_formset formset layout='horizontal' %}
-            </div>
+            {{ formset.management_form }}
+            {{ formset.non_form_errors }}
+            {% for f in formset %}
+                {{ f.id }}
+                <div class="inline {{ formset.prefix }}">
+                    {% bootstrap_form f layout="horizontal" %}
+                </div>
+            {% endfor %}
           {% endfor %}
           <div class="clearfix"></div>
           {% buttons %}
