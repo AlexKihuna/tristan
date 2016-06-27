@@ -9,7 +9,7 @@ from .models import (
     SupplyOrderPayment, SalesOrderItem, SupplyOrderItem, Inventory,
     ItemImage, SalesOrderItemDelivery
 )
-from .forms import SalesOrderPaymentForm, SalesOrderForm, ItemDeliveryForm
+from .forms import SalesOrderPaymentForm, SalesOrderForm, ItemDeliveryForm, ItemFormset, DeliveryFormset
 from .mixin import AjaxableResponseMixin
 
 
@@ -53,8 +53,7 @@ class CustomerListView(ListView):
         search = self.request.GET.get('search', None)
         if search:
             queryset = self.model.objects.filter(
-                Q(username__icontains=search) | Q(surname__icontains=search) |
-                Q(other_names__icontains=search) | Q(email__icontains=search) |
+                Q(name__icontains=search) | Q(email__icontains=search) |
                 Q(contact_phone__icontains=search)
             )
         else:
@@ -191,7 +190,20 @@ class SalesOrderCreateView(AjaxableResponseMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super(SalesOrderCreateView, self).get_context_data(**kwargs)
         context['page_title'] = "Add Sales Order"
+        if self.request.POST:
+            context['formsets'] = [ItemFormset(self.request.POST)]
+        else:
+            context['formsets'] = [ItemFormset(prefix='items')]
         return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        if all([f.is_valid() for f in context['formsets']]):
+            self.object = form.save()
+            for formset in context['formsets']:
+                formset.instance = self.object
+                formset.save()
+        return super(SalesOrderCreateView, self).form_valid(form)
 
 
 class SalesOrderUpdateView(AjaxableResponseMixin, UpdateView):
@@ -202,7 +214,20 @@ class SalesOrderUpdateView(AjaxableResponseMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(SalesOrderUpdateView, self).get_context_data(**kwargs)
         context['page_title'] = "Edit Sales Order %s" % context['object'].order_code
+        if self.request.POST:
+            context['formsets'] = [ItemFormset(self.request.POST, instance=self.get_object())]
+        else:
+            context['formsets'] = [ItemFormset(instance=self.get_object())]
         return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        if all([f.is_valid() for f in context['formsets']]):
+            self.object = form.save()
+            for formset in context['formsets']:
+                formset.instance = self.object
+                formset.save()
+        return super(SalesOrderUpdateView, self).form_valid(form)
 
 
 class SalesOrderDeleteView(AjaxableResponseMixin, DeleteView):
@@ -225,11 +250,21 @@ class SalesOrderItemCreateView(AjaxableResponseMixin, CreateView):
         context = super(SalesOrderItemCreateView, self).get_context_data(**kwargs)
         sales_order = SalesOrder.objects.get(pk=self.kwargs['pk'])
         context['page_title'] = "Sales Order %s: Add Item" % sales_order.order_code
+        if self.request.POST:
+            context['formsets'] = [DeliveryFormset(self.request.POST)]
+        else:
+            context['formsets'] = [DeliveryFormset()]
         return context
 
     def form_valid(self, form):
         sales_order = SalesOrder.objects.get(pk=self.kwargs['pk'])
         form.instance.sales_order = sales_order
+        context = self.get_context_data()
+        if all([f.is_valid() for f in context['formsets']]):
+            self.object = form.save()
+            for formset in context['formsets']:
+                formset.instance = self.object
+                formset.save()
         return super(SalesOrderItemCreateView, self).form_valid(form)
 
 
@@ -252,7 +287,6 @@ class SalesOrderItemUpdateView(AjaxableResponseMixin, UpdateView):
 class SalesOrderItemDeleteView(AjaxableResponseMixin, DeleteView):
     model = SalesOrderItem
     template_name = 'core/confirm_delete.html'
-    # success_url = reverse_lazy('core:salesorder')
 
     def get_success_url(self):
         context = self.get_context_data()
@@ -318,7 +352,6 @@ class SalesOrderPaymentUpdateView(AjaxableResponseMixin, UpdateView):
 class SalesOrderPaymentDeleteView(AjaxableResponseMixin, DeleteView):
     model = SalesOrderPayment
     template_name = 'core/confirm_delete.html'
-    # success_url = reverse_lazy('core:salesorder')
 
     def get_success_url(self):
         context = self.get_context_data()
@@ -372,6 +405,17 @@ class InventoryUpdateView(AjaxableResponseMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(InventoryUpdateView, self).get_context_data(**kwargs)
         context['page_title'] = "Edit %s" % context['object'].item_name
+        return context
+
+
+class InventoryDeleteView(AjaxableResponseMixin, DeleteView):
+    model = Inventory
+    template_name = 'core/confirm_delete.html'
+    success_url = reverse_lazy('core:inventory')
+
+    def get_context_data(self, **kwargs):
+        context = super(InventoryDeleteView, self).get_context_data(**kwargs)
+        context['page_title'] = "%s" % context['object'].item_name
         return context
 
 

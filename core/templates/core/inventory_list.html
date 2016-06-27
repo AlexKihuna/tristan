@@ -2,11 +2,18 @@
 {% block title %}Inventory{% endblock %}
 {% block content %}
   <div class="container-fluid">
-    <div class="col-md-8 col-md-offset-2">
-    <ul class="list-inline">
+    <div class="col-md-4 visible-md-block visible-lg-block">
+      <div class="col-md-8 col-md-offset-1">
+        <h1>Actions</h1>
+        <p><a class="btn btn-primary btn-block" href="{% url 'core:inventory_add' %}">Add New Item</a></p>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div class="col-md-8">
+    <h1>Inventory</h1>
+    <ul class="list-inline visible-sm-block visible-xs-block">
       <li><a class="btn btn-primary" href="{% url 'core:inventory_add' %}">Add Item</a></li>
     </ul>
-    <h1>Inventory</h1>
       <div class="table-responsive">
         <table class="table table-hover">
           <thead>

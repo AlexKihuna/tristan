@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^inventory/(?P<page>[0-9]+)?$', views.InventoryListView.as_view(), name='inventory'),
     url(r'^inventory/id/(?P<pk>[0-9]+)?$', views.InventoryDetailView.as_view(), name='item'),
     url(r'^inventory/add/$', views.InventoryCreateView.as_view(), name='inventory_add'),
-    url(r'^inventory/update/id/(?P<pk>[0-9]+)$', views.InventoryUpdateView.as_view(), name='inventory_edit'),
+    url(r'^inventory/id/(?P<pk>[0-9]+)/update$', views.InventoryUpdateView.as_view(), name='inventory_edit'),
+    url(r'^inventory/id/(?P<pk>[0-9]+)/delete$', views.InventoryDeleteView.as_view(), name='inventory_delete'),
     url(r'^inventory/id/image/add/(?P<pk>[0-9]+)$', views.ImageCreateView.as_view(), name='item_image_add'),
 ]

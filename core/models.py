@@ -42,6 +42,9 @@ class Customer(models.Model):
         max_digits=9, decimal_places=2, default=0, editable=False
     )
 
+    class Meta:
+        ordering = ['name', 'email']
+
     def __str__(self):
         return self.name
 
@@ -64,6 +67,9 @@ class Supplier(models.Model):
     total_due = models.DecimalField(
         max_digits=9, decimal_places=2, default=0, editable=False
     )
+
+    class Meta:
+        ordering = ['name', 'email']
 
     def __str__(self):
         return self.name

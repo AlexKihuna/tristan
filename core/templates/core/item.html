@@ -4,28 +4,50 @@
   <div class="container-fluid">
     <div class="col-md-4">
       <h1>{{ item.item_name }}</h1>
-
-      <p>{{ item.item_sku }}</p>
-      <dl class="dl-horizontal">
-        <dt>Quantity in Stock</dt>
-        <dd>{{ item.quantity }}</dd>
-        <dt>Unit Price</dt>
-        <dd>{{ item.currency }} {{ item.unit_price }}</dd>
-      </dl>
-
-      <ul class="list-unstyled">
-        <li><a class="btn btn-primary" href="{% url 'core:inventory_edit' item.id %}">Edit</a></li>
-      </ul>
-      <hr>
-    <ul class="list-unstyled">
-        <li><a class="btn btn-primary" href="{% url 'core:item_image_add' item.id %}">Add Image</a></li>
-      </ul>
-      <div class="thumbnails">
-        {% for image in item.itemimage_set.all %}
-          <img src="{{ image.image.url }}" class="img-thumbnail img-responsive">
-        {% endfor %}
+      <p>SKU: {{ item.item_sku }}</p>
+      <div class="col-md-8 col-md-offset-1">
+        <p><a class="btn btn-default btn-block" href="{% url 'core:inventory_edit' item.pk %}">Edit</a></p>
+        <p><a class="btn btn-primary btn-block" href="{% url 'core:item_image_add' item.pk %}">Add Image</a></p>
+        <p><a class="btn btn-danger btn-block" href="{% url 'core:inventory_delete' item.pk %}">Delete</a></p>
       </div>
+      <div class="clearfix"></div>
+      <hr>
+      <h3>Stats</h3>
+      <ul class="list-unstyled">
+        <li><strong>Quantity in Stock</strong>: {{ item.quantity }}</li>
+        <li><strong>Unit Price</strong>: {{ item.currency }} {{ item.unit_price }}</li>
+      </ul>
+      <p>{{ item.description }}</p>
     </div>
-    <div class="col-md-8"><p>{{ item.description }}</p></div>
+    <div class="col-md-8">
+    {% if item.itemimage_set.count %}
+      <div id="carousel" class="carousel slide" data-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+          {% for image in item.itemimage_set.all %}
+            <li data-target="#carousel" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.counter0 == 0 %}active{% endif %}"></li>
+          {% endfor %}
+        </ol>
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+          {% for image in item.itemimage_set.all %}
+            <div class="item {% if forloop.counter0 == 0 %}active{% endif %}">
+              <img src="{{ image.image.url }}" alt="{{ item.item_name }}">
+              <div class="carousel-caption">{{ item.item_name }}</div>
+            </div>
+          {% endfor %}
+        </div>
+        <!-- Controls -->
+        <a class="left carousel-control" href="#carousel" role="button" data-slide="prev">
+          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#carousel" role="button" data-slide="next">
+          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    {% endif %}
+    </div>
   </div>
 {% endblock %}

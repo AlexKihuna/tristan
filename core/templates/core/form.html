@@ -9,6 +9,13 @@
         <form action="" method="post" enctype="multipart/form-data">
           {% csrf_token %}
           {% bootstrap_form form %}
+          {% for formset in formsets %}
+            <div class="{{ formset.prefix }} inline">
+{#            <h4>{{ formset.prefix | title }}</h4>#}
+            {% bootstrap_formset formset layout='horizontal' %}
+            </div>
+          {% endfor %}
+          <div class="clearfix"></div>
           {% buttons %}
             <button class="btn btn-default" onclick="window.history.go(-1);">Cancel</button>
             <button type="submit" class="btn btn-primary">Submit</button>

@@ -140,3 +140,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Custom Settings
 PAGE_SIZE = 24  # Number of items a page should list
 SITE_ID = 1
+BOOTSTRAP3 = {
+    'required_css_class': 'required',
+}

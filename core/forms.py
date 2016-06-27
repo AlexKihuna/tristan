@@ -32,4 +32,25 @@ class SalesOrderPaymentForm(forms.ModelForm):
             'date_paid': forms.DateInput(attrs={'class':'datepicker'}),
         }
 
-payment_formset = forms.formset_factory(SalesOrderPayment)
+
+class ItemInline(forms.ModelForm):
+    class Meta:
+        model = SalesOrderItem
+        fields = ['item', 'quantity_ordered', 'currency', 'unit_price']
+
+
+class ItemDeliveryInline(forms.ModelForm):
+    class Meta:
+        model = SalesOrderItemDelivery
+        fields = ['item', 'quantity_delivered', 'delivery_date']
+        widgets = {
+            'delivery_date': forms.DateInput(attrs={'class':'datepicker'}),
+        }
+
+
+ItemFormset = forms.inlineformset_factory(
+    SalesOrder, SalesOrderItem, form=ItemInline, extra=1
+)
+DeliveryFormset = forms.inlineformset_factory(
+    SalesOrderItem, SalesOrderItemDelivery, form=ItemDeliveryInline, extra=1
+)

@@ -86,12 +86,24 @@
 <script src="{% static "js/jquery-ui.min.js" %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/holder.min.js' %}"></script>
+<script src="{% static 'js/jquery.formset.js' %}"></script>
 <script src="{% static 'js/wow.min.js' %}"></script>
 <script>
   new WOW().init();
-$(document).ready(function() {
+  $(document).ready(function () {
     $('.datepicker').datepicker();
-});
+    {% for formset in formsets %}
+    $(function () {
+      $(".{{ formset.prefix }} ").formset({
+        prefix: "{{ formset.prefix }}",
+        addText: "<span class='glyphicon glyphicon-plus' aria-hidden='true'></span> Add",
+        deleteText: "<span class='glyphicon glyphicon-remove' aria-hidden='true'></span> Remove",
+        addCssClass: 'add-row btn btn-xs btn-info',
+        deleteCssClass: 'delete-row btn btn-xs btn-danger'
+      })
+    });
+    {% endfor %}
+  });
 </script>
 </body>
 </html>
