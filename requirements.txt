@@ -1,4 +1,4 @@
-django<1.10
+django<1.11.29
 Pillow
 psycopg2
 django-registration-redux
